@@ -11,14 +11,78 @@ And this repo is built on top of [OpenAI Baselines](https://github.com/openai/ba
 ## Installation
 
 This implementation requires the installation of the [OpenAI Baselines](https://github.com/openai/baselines/tree/master/baselines) module (commit version ```2bca79```). 
+
+### Conda Virtual Environment
+We would like to provide further guidance in the install of the old repo here. 
+- As of 2025, we recommend using conda for this to install python 3.6. Python 3.6 is ncecessary to be compatible with version 1.14 of torch-gpu used in baselines. 
+```
+conda create -n iter python==3.6
+```
+
+### Mujoco Install
+- You will also need mujoco 2.1.0 installed.
+```
+wget https://github.com/google-deepmind/mujoco/releases/download/2.1.0/mujoco210-linux-x86_64.tar.gz
+```
+
+You can place it in the home directory or for multiple users /opt is recommended.
+```
+tar -xzf mujoco210-linux-x86_64.tar.gz -C ~/.mujoco 
+# tar -xzf mujoco210-linux-x86_64.tar.gz -C /opt/mujoco/
+```
+
+Tell your favorite shell (.bashrc or .zshrc) where to look for mujoco (adjust depending on above folder):
+```
+echo "export MUJOCO_HOME=$HOME/.mujoco/mujoco210" >> ~/.bashrc
+echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/nvidia:$MUJOCO_HOME/bin" >> ~/.bashrc
+```
+
+If you have multiple mujoco installations, you will want to be careful which libraries/files are being read. 
+You could either export the above commands directly into your terminal or tmux session or create a script to load them at will.
+
+### OpenAI Baselines Clone
+Go to the baselines main fork and follow 
 ```
 git clone https://github.com/openai/baselines.git
 cd baselines
 ```
 Install baselines package (If you meet any problem during the installation, please click [here](https://github.com/openai/baselines/tree/master/baselines)).
+
+### Build-Time Dependencies
+You may need to install some build-time dependencies first not included in the setup.py. 
+Binaries:
+```
+sudo apt update && sudo apt install libopenmpi-dev openmpi-bin
+```
+Pip packages:
+```
+pip install tensorflow-gpu==1.14.0 # Or non GPU tensorflow==1.14.0
+pip install Cython==0.29.30
+pip install mpi4py==4.0.3
+pip install Cython==0.29.30
+pip install patchelf==0.17.2.1
+pip install ipdb
+pip install tensorboardX
+```
+
+### Setup.py
+Now run the setup.py file:
 ```
 pip install -e .
 ```
+
+### Errors
+If you get errors with building the wheel for opencv-2, do the following:
+- Install python3-opencv:
+```
+python3-opencv
+```
+- And run the setup.py with a --no-build-isolation option:
+```
+pip install -e . --no-build-isolation
+```
+
+### Copy ITER files into Baselines
 After the installation, please create a new folder for this repo and go inside.
 ```
 mkdir ITER_KER_GER && cd $_
@@ -39,12 +103,8 @@ cp -f her/cmd_util.py ~/baselines/baselines/common
 ```
 
 Finally, install the tensorflow 1.14.0, mpi4py, ipdb, tensorboardX.
-```
-conda install tensorflow==1.14.0, mpi4py
-```
-```
-conda install -c conda-forge ipdb, tensorboardX
-```
+
+
 
 ## Usage
 
